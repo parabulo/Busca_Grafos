@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Busca Sem Informação</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .links line {
+            stroke: #999;
+            stroke-opacity: 0.6;
+        }
+        .nodes circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Busca Sem Informação</h1>
+    <form method="post" action="{% url 'form_search_view' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+
+    {% if graph_data %}
+        <h2>Visualização de Grafo:</h2>
+        <div id="graph"></div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var graphData = {{ graph_data|safe }};
+                var width = 960, height = 600;
+
+                var svg = d3.select("#graph").append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+
+                var simulation = d3.forceSimulation()
+                    .force("link", d3.forceLink().id(d => d.id))
+                    .force("charge", d3.forceManyBody())
+                    .force("center", d3.forceCenter(width / 2, height / 2));
+
+                var link = svg.append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(graphData.links)
+                    .enter().append("line")
+                    .attr("stroke-width", 2);
+
+                var node = svg.append("g")
+                    .attr("class", "nodes")
+                    .selectAll("circle")
+                    .data(graphData.nodes)
+                    .enter().append("circle")
+                    .attr("r", 10)
+                    .attr("fill", "blue");
+
+                simulation
+                    .nodes(graphData.nodes)
+                    .on("tick", ticked);
+
+                simulation.force("link")
+                    .links(graphData.links);
+
+                function ticked() {
+                    link
+                        .attr("x1", d => d.source.x)
+                        .attr("y1", d => d.source.y)
+                        .attr("x2", d => d.target.x)
+                        .attr("y2", d => d.target.y);
+
+                    node
+                        .attr("cx", d => d.x)
+                        .attr("cy", d => d.y);
+                }
+            });
+        </script>
+    {% endif %}
+</body>
+</html>
