@@ -17,10 +17,9 @@ def form_search_view(request):
         limite_busca = form.cleaned_data.get('limite_busca', None)
 
         nos, grafo = auxs.Gera_Problema_Grafo(MAPA_PATH)
-
-        if node_start not in nos or node_end not in nos:
-            form.add_error('node_start', 'Nó invalido' if node_start not in nos else '')
-            form.add_error('node_end', 'Nó invalido' if node_end not in nos else '')
+        
+        if node_start == node_end:
+            form.add_error('node_start', 'Nós de Início e Fim não podem ser os mesmos')
             return render(request, 'index.html', {'form': form})
 
         match tipo_busca:
@@ -47,35 +46,18 @@ def form_search_view(request):
                     'source': nos[idx],
                     'target': neighbor
                 })
+        
+        tamanho_caminho = len(result)
 
         context = {
             'form': form,
             'graph_data': json.dumps(graph_data),
+            'tamanho_caminho': json.dumps(tamanho_caminho),
             'result': json.dumps(result),
-            'caminho_falho': isinstance(result, str) and result == "caminho não encontrado"
+            'caminho_falho': result == "caminho não encontrado"
         }
         return render(request, 'results.html', context)
     else:
         form = Form_Busca()
 
     return render(request, 'index.html', {'form': form})
-
-""" def graph_view(request):
-    
-    graph_data = {
-        'nodes': [{'id': node} for node in nos],
-        'links': []
-    }
-
-    for idx, neighbors in enumerate(grafo):
-        for neighbor in neighbors:
-            graph_data['links'].append({
-                'source': nos[idx],
-                'target': neighbor
-            })
-
-    context = {
-        'form': form,
-        'graph_data': json.dumps(graph_data)
-    }
-    return render(request, 'index.html', context) """

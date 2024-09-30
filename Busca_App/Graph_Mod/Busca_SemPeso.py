@@ -114,8 +114,8 @@ class busca(object):
                         caminho += l2.exibeCaminho()
                         return caminho
         caminho = []
-        caminho.append("caminho não encontrado")
-        return caminho
+
+        return "caminho não encontrado"
     
     # BUSCA EM PROFUNDIDADE LIMITADA
     def prof_limitada(inicio,fim,nos,grafo,limite):
@@ -174,8 +174,8 @@ class busca(object):
                             return caminho
 
         caminho = []
-        caminho.append("caminho não encontrado")
-        return caminho
+        
+        return "caminho não encontrado"
     
     # BUSCA EM APROFUNDAMENTO ITERATIVO
     def aprof_iterativo(inicio,fim,nos,grafo,lim_max):
@@ -235,8 +235,7 @@ class busca(object):
                                 return caminho, limite
 
         caminho = []
-        caminho.append("caminho não encontrado")
-        return caminho, limite
+        return "caminho não encontrado"
     
     # BUSCA BIDIRECIONAL
     def bidirecional(inicio, fim, nos, grafo):
